@@ -1,0 +1,429 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <nav class="navbar navbar-default">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <img src="{{ asset('bundles/app/images/logo.jpg') }}" height="50" style="position: relative;left: -10px;" />
+                        </div>
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">                           
+                            <ul class="nav navbar-nav navbar-right">
+                                {% if is_granted('ADMIN') %}
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">Reports</a></li>
+                                            <li><a href="#">Update Departments</a></li>
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                                <li><a href="#">Welcome {{ app.user.getDisplayname() }}</a></li>
+                                <li><a href="{{ path('logout') }}">Logout</a></li>
+                            </ul>
+                        </div><!-- /.navbar-collapse -->
+                    </div><!-- /.container-fluid -->
+                </nav>
+                
+                <div id="action_prototype" style="display: none;">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Workflow
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a href="javascript:void(0);" onclick="return showModal(event);" formAction="{{ path('_request_assign', {'id':'{id}'}) }}" modalTitle="Assign Request" modalUrl="{{ path('_request_assign', {'id':'{id}'}) }}">Assign</a></li>
+                            <li><a href="javascript:void(0);" onclick="return showModal(event);" formAction="{{ path('_request_approve', {'id':'{id}'}) }}" modalTitle="Approve Request" modalUrl="{{ path('_request_approve', {'id':'{id}'}) }}">Approve</a></li>
+                            <li><a href="javascript:void(0);" onclick="return showModal(event);" formAction="{{ path('_request_reject', {'id':'{id}'}) }}" modalTitle="Reject Request" modalUrl="{{ path('_request_reject', {'id':'{id}'}) }}">Reject</a></li>
+                            <li><a href="javascript:void(0);" onclick="return showModal(event);" formAction="{{ path('_request_rvu', {'id':'{id}'}) }}" modalTitle="RVU Details" modalUrl="{{ path('_request_rvu', {'id':'{id}'}) }}">RVU</a></li>
+                            <li><a href="javascript:void(0);" onclick="return showModal(event);" formAction="{{ path('_edit_requests', {'id':'{id}'}) }}" modalTitle="Edit Request" modalUrl="{{ path('_edit_requests', {'id':'{id}'}) }}">Edit</a></li>
+                            <li><a href="javascript:void(0);" onclick="return showConfirm(event);" targetUrl="{{ path('_remove_requests', {'id':'{id}'}) }}" cofirmText="Are you sure.Do you want to remove this request?">Delete</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="toolbar">
+                    <div class="form-inline" role="form">
+                        <div class="form-group">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default dropdown-toggle requestStatusBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="statusTxt">All</span>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-left requestStatus">
+                                    <li data-status="-1"><a href="javascript:void(0);">All</a></li>
+                                    <li data-status="0"><a href="javascript:void(0);">Draft</a></li>
+                                    <li data-status="1"><a href="javascript:void(0);">Pending</a></li>
+                                    <li data-status="2"><a href="javascript:void(0);">Approved</a></li>
+                                    <li data-status="3"><a href="javascript:void(0);">Rejected</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default dropdown-toggle filterDropdown"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Filter
+                                    <span class="caret"></span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-left">
+                                    <div class="form-group filterFields">
+                                        <div class="form-group">
+                                            <label class="control-label">Explanation: </label>
+                                            <input name="search" class="form-control" type="text">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="button" class="btn btn-default filterSubmit" value="Search" />
+                                            <input type="button" class="btn btn-default filterClear" value="Clear" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% if is_granted('REQUESTER') %}
+                            <div class="form-group">
+                                <button class="btn btn-default" ng-click="toggleModal($event)" formAction="{{ path('_edit_requests', {'id':0}) }}" modalTitle="New Request" modalUrl="{{ path('_edit_requests', {'id':0}) }}"><span class="ladda-label">New Request</span></button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>        
+                <table id="table"
+                    data-show-refresh="true"
+                    data-toolbar="#toolbar"
+                    data-show-toggle="true"
+                    data-show-columns="true"
+                    data-show-export="true"
+                    data-detail-formatter="detailFormatter"
+                    data-minimum-count-columns="2"
+                    data-show-pagination-switch="true"
+                    data-pagination="true"
+                    data-id-field="id"
+                    data-page-list="[10, 25, 50, 100, ALL]"
+                    data-show-footer="false"
+                    data-query-params="queryParams"
+                    data-side-pagination="server"
+                    data-url="{{ path('_ajax_requests', {'queryStatus': queryStatus}) }}"
+                    data-response-handler="responseHandler">
+             </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript">
+        function showModal(event){
+            if($(event.currentTarget).parent('li').hasClass('disabled') || $(event.currentTarget).hasClass('disabled')){
+                alert('Not Allowed...');
+                return false;
+            }
+            angular.element(event.currentTarget).scope().toggleModal(event);
+        }
+        
+        function showConfirm(event){
+            if($(event.currentTarget).parent('li').hasClass('disabled') || $(event.currentTarget).hasClass('disabled')){
+                alert('Not Allowed...');
+                return false;
+            }
+            angular.element(event.currentTarget).scope().confirmExecuteUrl(event);
+        }
+        
+        $(document).ready(function(){
+            $(".requestStatus").on("click", "li", function(event){
+                $('.requestStatusBtn .statusTxt').text($(event.currentTarget).find('a').text());
+                var url = '{{ path('_ajax_requests') }}';
+                if(parseInt($(event.currentTarget).data('status')) >= 0){
+                   url = '{{ path('_ajax_requests') }}/' + $(event.currentTarget).data('status');
+                }
+                $('#table').bootstrapTable('refresh', {
+                    url : url
+                });
+            });
+            
+            $('.filterSubmit').on('click', function(){
+                $(".filterDropdown").dropdown("toggle");
+                $('#table').bootstrapTable('refresh');
+            });
+            
+            $('.filterClear').on('click', function(){
+                $('.filterFields').find('input[name]').each(function () {
+                    $(this).val('');
+                });
+                $(".filterDropdown").dropdown("toggle");
+                $('#table').bootstrapTable('refresh');
+            });
+        });
+        
+        function queryParams() {
+            var params = {};
+            $('.filterFields').find('input[name]').each(function () {
+                params[$(this).attr('name')] = $(this).val();
+            });
+            return params;
+        }
+
+    </script>
+    <script>
+    var $table = $('#table'),
+        selections = [];
+
+    function initTable() {
+        $table.bootstrapTable({
+            //height: getHeight(),
+            columns: [
+                {
+                    field: 'status',
+                    title: '',
+                    align: 'center',
+                    formatter: statusFormatter
+                },
+                {
+                    field: 'id',
+                    title: 'ID',
+                    sortable: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                {
+                    field: 'requester',
+                    title: 'Requester',
+                    sortable: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                {
+                    field: 'dept',
+                    title: 'Dept',
+                    sortable: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                {
+                    field: 'admin',
+                    title: 'Admin',
+                    sortable: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                {
+                    field: 'hcpc',
+                    title: 'HCPC',
+                    sortable: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                {
+                    field: 'modifier',
+                    title: 'Modifier',
+                    sortable: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                {
+                    field: 'system',
+                    title: 'System',
+                    sortable: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                {
+                    field: 'explanation',
+                    title: 'Explanation',
+                    sortable: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                {
+                    field: 'operate',
+                    title: 'Actions',
+                    align: 'center',
+                    formatter: operateFormatter
+                }
+            ]
+        });
+        
+        // sometimes footer render error.
+        setTimeout(function () {
+            $table.bootstrapTable('resetView', {
+                //height: getHeight()
+            });
+        }, 200);
+        
+        $table.on('check.bs.table uncheck.bs.table ' +
+                'check-all.bs.table uncheck-all.bs.table', function () {
+            $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
+
+            // save your data, here just save the current page
+            selections = getIdSelections();
+            // push or splice the selections if you want to save all data selections
+        });
+        
+        $table.on('expand-row.bs.table', function (e, index, row, $detail) {
+            if (index % 2 == 1) {
+                $detail.html('Loading from ajax request...');
+                $.get('LICENSE', function (res) {
+                    $detail.html(res.replace(/\n/g, '<br>'));
+                });
+            }
+        });
+        
+        $table.on('all.bs.table', function (e, name, args) {
+            //console.log(name, args);
+        });
+        
+        $(window).resize(function () {
+            $table.bootstrapTable('resetView', {
+                //height: getHeight()
+            });
+        });
+    }
+
+    function getIdSelections() {
+        return $.map($table.bootstrapTable('getSelections'), function (row) {
+            return row.id
+        });
+    }
+
+    function responseHandler(res) {
+        $.each(res.rows, function (i, row) {
+            row.state = $.inArray(row.id, selections) !== -1;
+        });
+        return res;
+    }
+
+    function detailFormatter(index, row) {
+        var html = [];
+        return html.join('');
+    }
+    
+    function statusFormatter(value, row, index) {
+        var icons = [];
+        icons[0] = '<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>';
+        icons[1] = '<span class="glyphicon glyphicon-time" aria-hidden="true"></span>';
+        icons[2] = '<span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>';
+        icons[3] = '<span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>';
+        
+        return [
+            icons[parseInt(row.status)]
+        ].join('');
+    }
+
+    function operateFormatter(value, row, index) {
+        var admin = {% if is_granted('ADMIN') %}true{% else %}false{% endif %};
+        var approver = {% if is_granted('APPROVER') %}true{% else %}false{% endif %};
+        var tempProtoType = $('<div id="tempProtoType">' + $('#action_prototype').html() + '</div>');
+        var user = '{{ app.user.getCn() }}';
+        
+        if(!admin || row.status != 1){
+            tempProtoType.find('ul li').eq(0).addClass('disabled');
+        }
+        
+        if((!admin && !approver) || row.status != 1){
+            tempProtoType.find('ul li').eq(1).addClass('disabled');
+            tempProtoType.find('ul li').eq(2).addClass('disabled');
+        }
+        
+        if(!admin && user != row.assignee){
+            tempProtoType.find('ul li').eq(1).addClass('disabled');
+            tempProtoType.find('ul li').eq(2).addClass('disabled');
+        }
+        
+        if((admin || approver) || row.status != 0){
+            tempProtoType.find('ul li').eq(5).addClass('disabled');
+        }
+        
+        return [
+            tempProtoType.html().replace(new RegExp('%7Bid%7D', 'g'), row.id)
+        ].join('');
+    }
+
+    window.operateEvents = {
+        'click .like': function (e, value, row, index) {
+            alert('You click like action, row: ' + JSON.stringify(row));
+        },
+        'click .remove': function (e, value, row, index) {
+            $table.bootstrapTable('remove', {
+                field: 'id',
+                values: [row.id]
+            });
+        }
+    };
+
+    function totalTextFormatter(data) {
+        return 'Total';
+    }
+
+    function totalNameFormatter(data) {
+        return data.length;
+    }
+
+    function totalPriceFormatter(data) {
+        var total = 0;
+        $.each(data, function (i, row) {
+            total += +(row.price.substring(1));
+        });
+        return '$' + total;
+    }
+
+    function getHeight() {
+        return $(window).height() - $('.navbar').outerHeight(true) + 10;
+    }
+
+    $(function () {
+        var scripts = [
+                'http://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js',
+                'http://rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/js/bootstrap-editable.js'
+            ],
+            eachSeries = function (arr, iterator, callback) {
+                callback = callback || function () {};
+                if (!arr.length) {
+                    return callback();
+                }
+                var completed = 0;
+                var iterate = function () {
+                    iterator(arr[completed], function (err) {
+                        if (err) {
+                            callback(err);
+                            callback = function () {};
+                        }
+                        else {
+                            completed += 1;
+                            if (completed >= arr.length) {
+                                callback(null);
+                            }
+                            else {
+                                iterate();
+                            }
+                        }
+                    });
+                };
+                iterate();
+            };
+
+        eachSeries(scripts, getScript, initTable);
+    });
+
+    function getScript(url, callback) {
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        script.src = url;
+
+        var done = false;
+        // Attach handlers for all browsers
+        script.onload = script.onreadystatechange = function() {
+            if (!done && (!this.readyState ||
+                    this.readyState == 'loaded' || this.readyState == 'complete')) {
+                done = true;
+                if (callback)
+                    callback();
+
+                // Handle memory leak in IE
+                script.onload = script.onreadystatechange = null;
+            }
+        };
+
+        head.appendChild(script);
+
+        // We handle everything using the script element injection
+        return undefined;
+    }
+</script>
+{% endblock %}

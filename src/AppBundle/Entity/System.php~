@@ -1,0 +1,33 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: zhaol02
+ * Date: 11/13/2014
+ * Time: 2:21 PM
+ */
+
+namespace NYULMC\ChargeCodeRequestBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+
+/**
+ * System
+ *
+ * @ORM\Table(name="System")
+ * @ORM\Entity(repositoryClass="NYULMC\ChargeCodeRequestBundle\Entity\System")
+ */
+class System {
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     * @ORM\Column(name="name", type="string", length=200)
+     */
+    private $name;
+} 

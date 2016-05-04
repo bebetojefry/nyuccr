@@ -1,0 +1,11 @@
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{{ form_row(form.assignee) }}
+{{ form_row(form.assign) }}
+{{ form_rest(form) }}
+{{ form_errors(form) }}
+<script type="text/javascript">
+    $('#ccRequest_assignee').autocompleter({
+        url_list: '/ajax/employees/search',
+        url_get: '/ajax/employees/get/'
+    });
+</script>

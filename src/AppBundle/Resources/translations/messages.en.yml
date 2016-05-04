@@ -1,0 +1,8 @@
+globals:
+    confirm: Confirmation
+    yes: Yes
+    no: No
+    error:
+        something: Some thing gone wrong
+    session:
+        expired: Your session expired

@@ -1,0 +1,27 @@
+<table width="100%" class="table">
+    <tr>
+        <th>Employee Type</th>
+        <th>Pre Procedure (mins)</th>
+        <th>Procedure (mins)</th>
+        <th>Post Procedure Time (mins)</th>
+        <th>Total (mins)</th>
+    </tr>
+    {% set grantTotal = 0 %}
+    {% for rvu in rvus %}
+        {% set grantTotal = grantTotal + rvu.total %}
+        <tr>
+            <td>{{ rvu.name }}</td>
+            <td>{{ rvu.preProcedure }}</td>
+            <td>{{ rvu.onProcedure }}</td>
+            <td>{{ rvu.postProcedure }}</td>
+            <td>{{ rvu.total }}</td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td>Grant Total</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>{{ grantTotal }}</td>
+    </tr>
+</table>

@@ -1,0 +1,92 @@
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+{{ form_row(form.epicDept) }}
+{{ form_row(form.deptAdminKId) }}
+{{ form_row(form.hcpcs) }}
+{{ form_row(form.hcpcsDesc) }}
+{{ form_row(form.modifier) }}
+{{ form_row(form.system) }}
+{{ form_row(form.explanation) }}
+{{ form_row(form.priceConsideration) }}
+<hr>
+<h5>RVUS/COST INFORMATION</h5>
+<hr>
+<ul class="rvus" data-prototype='<div class="form-inline">
+        {{ form_widget(form.rvus.vars.prototype.name)|e }}
+        {{ form_widget(form.rvus.vars.prototype.preProcedure)|e }}
+        {{ form_widget(form.rvus.vars.prototype.onProcedure)|e }}
+        {{ form_widget(form.rvus.vars.prototype.postProcedure)|e }}
+        {{ form_widget(form.rvus.vars.prototype.requestId)|e }}</div>'>
+    {# iterate over each existing rvus and render its only fields #}
+    {% for rvu in form.rvus %}
+        <li>
+            <div class="form-inline">
+                {{ form_widget(rvu.name) }}
+                {{ form_widget(rvu.preProcedure) }}
+                {{ form_widget(rvu.onProcedure) }}
+                {{ form_widget(rvu.postProcedure) }}
+                {{ form_widget(rvu.requestId) }}
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+
+{{ form_widget(form.save) }}
+{{ form_widget(form.submit) }}
+{{ form_rest(form) }}
+{{ form_errors(form) }}
+<script type="text/javascript">
+    var $collectionHolder;
+
+    // setup an "rvu a tag" link
+    var $addTagLink = $('<a href="javascript:void(0);" class="add_tag_link">Add RVU</a>');
+    var $newLinkLi = $('<li></li>').append($addTagLink);
+
+    jQuery(document).ready(function() {
+        // Get the ul that holds the collection of rvus
+        $collectionHolder = $('ul.rvus');
+
+        // add the "Add RVU" anchor and li to the rvus ul
+        $collectionHolder.append($newLinkLi);
+
+        // count the current form inputs we have (e.g. 2), use that as the new
+        // index when inserting a new item (e.g. 2)
+        $collectionHolder.data('index', $collectionHolder.find(':input').length);
+
+        $addTagLink.on('click', function(e) {
+            // prevent the link from creating a "#" on the URL
+            e.preventDefault();
+
+            // add a new rvu form (see next code block)
+            addRVUForm($collectionHolder, $newLinkLi);
+        });
+          
+        $('#ccRequest_deptAdminKId').autocompleter({
+            url_list: '/ajax/employees/search',
+            url_get: '/ajax/employees/get/'
+        });
+        
+        $('#ccRequest_epicDept').autocompleter({
+            url_list: '/ajax/departments/search',
+            url_get: '/ajax/departments/get/'
+        });
+    });
+    
+    function addRVUForm($collectionHolder, $newLinkLi) {
+        // Get the data-prototype explained earlier
+        var prototype = $collectionHolder.data('prototype');
+
+        // get the new index
+        var index = $collectionHolder.data('index');
+
+        // Replace '__name__' in the prototype's HTML to
+        // instead be a number based on how many items we have
+        var newForm = prototype.replace(/__name__/g, index);
+
+        // increase the index with one for the next item
+        $collectionHolder.data('index', index + 1);
+
+        // Display the form in the page in an li, before the "Add RVU" link li
+        var $newFormLi = $('<li></li>').append(newForm);
+        $newLinkLi.before($newFormLi);
+    }
+</script>

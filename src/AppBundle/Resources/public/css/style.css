@@ -1,0 +1,69 @@
+.panel-heading {
+    padding: 5px 15px;
+}
+
+.panel-footer {
+    padding: 1px 15px;
+    color: #A0A0A0;
+}
+
+.profile-img {
+    width: 150px;
+    height: 96px;
+    margin: 0 auto 10px;
+    display: block;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+.alert {
+    padding: 5px 10px;
+}
+form#modal-form {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+}
+ul.rvus {
+   list-style: none;
+   padding: 0;
+}
+ul.rvus li {
+    padding-bottom: 10px;
+}
+ul.ui-autocomplete {
+    z-index: 10000;
+    height: 200px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.navbar {
+    margin-bottom: 0;
+}
+.fixed-table-body {
+    overflow-x: visible;
+    overflow-y: visible;
+    height: auto;
+}
+.fixed-table-container {
+/*    overflow-x: auto;
+    overflow-y: visible;*/
+    height: auto !important;
+    padding-bottom: 55px !important;;
+}
+.fixed-table-pagination .pagination-detail {
+    margin-left: 10px;
+}
+.fixed-table-pagination .pagination {
+    margin-right: 10px;
+}
+.dropdown-menu>.disabled>a, .dropdown-menu>.disabled>a:focus, .dropdown-menu>.disabled>a:hover {
+    color: #ADADAD;
+}
+.filterFields {
+    padding: 10px;
+}
+
+.filterFields .form-group {
+    margin-bottom: 10px;
+}

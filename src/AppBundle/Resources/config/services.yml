@@ -1,0 +1,11 @@
+services:
+    ldap.listener:
+        class:  'AppBundle\EventHandler\LdapSecuritySubscriber'
+        arguments: ['@service_container', "%appsec_api_url%"]
+        tags:
+            - { name: 'kernel.event_subscriber' }
+    security.access.voter:
+        class:   'AppBundle\Security\Voter'
+        arguments: [@service_container, "%appsec_api_url%"]        
+        tags:
+            - { name: security.voter }
